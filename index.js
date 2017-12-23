@@ -323,14 +323,14 @@ Game.prototype.setConfigurablePositions = function(opts) {
 Game.prototype.setDimensions = function(opts) {
   if (opts.container) this.container = opts.container
   if (opts.container && opts.container.clientHeight) {
-    this.height = opts.container.clientHeight
+    this.height = opts.container.clientHeight * 2
   } else {
-    this.height = typeof window === "undefined" ? 1 : window.innerHeight
+    this.height = typeof window === "undefined" ? 1 : window.innerHeight * 2
   }
   if (opts.container && opts.container.clientWidth) {
-    this.width = opts.container.clientWidth
+    this.width = opts.container.clientWidth * 2
   } else {
-    this.width = typeof window === "undefined" ? 1 : window.innerWidth
+    this.width = typeof window === "undefined" ? 1 : window.innerWidth * 2
   }
 }
 
@@ -359,11 +359,11 @@ Game.prototype.notCapableMessage = function() {
 }
 
 Game.prototype.onWindowResize = function() {
-  var width = window.innerWidth
-  var height = window.innerHeight
+  var width = window.innerWidth * 2
+  var height = window.innerHeight * 2
   if (this.container) {
-    width = this.container.clientWidth
-    height = this.container.clientHeight
+    width = this.container.clientWidth * 2
+    height = this.container.clientHeight * 2
   }
   this.view.resizeWindow(width, height)
 }
