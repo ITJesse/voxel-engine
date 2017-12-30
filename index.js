@@ -31,6 +31,8 @@ function Game(opts) {
   if (!opts) opts = {}
   if (process.browser && this.notCapable(opts)) return
   
+  this.renderRatio = opts.renderRatio || 1
+  
   // is this a client or a headless server
   this.isClient = Boolean( (typeof opts.isClient !== 'undefined') ? opts.isClient : process.browser )
 
@@ -45,7 +47,6 @@ function Game(opts) {
   this.arrayType = opts.arrayType || Uint8Array
   this.cubeSize = 1 // backwards compat
   this.chunkSize = opts.chunkSize || 32
-  this.renderRatio = opts.renderRatio || 1
   
   // chunkDistance and removeDistance should not be set to the same thing
   // as it causes lag when you go back and forth on a chunk boundary
