@@ -45,6 +45,7 @@ function Game(opts) {
   this.arrayType = opts.arrayType || Uint8Array
   this.cubeSize = 1 // backwards compat
   this.chunkSize = opts.chunkSize || 32
+  this.renderRatio = opts.renderRatio || 1
   
   // chunkDistance and removeDistance should not be set to the same thing
   // as it causes lag when you go back and forth on a chunk boundary
@@ -323,14 +324,14 @@ Game.prototype.setConfigurablePositions = function(opts) {
 Game.prototype.setDimensions = function(opts) {
   if (opts.container) this.container = opts.container
   if (opts.container && opts.container.clientHeight) {
-    this.height = opts.container.clientHeight * 2
+    this.height = opts.container.clientHeight * this.renderRatio
   } else {
-    this.height = typeof window === "undefined" ? 1 : window.innerHeight * 2
+    this.height = typeof window === "undefined" ? 1 : window.innerHeight * this.renderRatio
   }
   if (opts.container && opts.container.clientWidth) {
-    this.width = opts.container.clientWidth * 2
+    this.width = opts.container.clientWidth * this.renderRatio
   } else {
-    this.width = typeof window === "undefined" ? 1 : window.innerWidth * 2
+    this.width = typeof window === "undefined" ? 1 : window.innerWidth * this.renderRatio
   }
 }
 
@@ -359,11 +360,11 @@ Game.prototype.notCapableMessage = function() {
 }
 
 Game.prototype.onWindowResize = function() {
-  var width = window.innerWidth * 2
-  var height = window.innerHeight * 2
+  var width = window.innerWidth * this.renderRatio
+  var height = window.innerHeight * this.renderRatio
   if (this.container) {
-    width = this.container.clientWidth * 2
-    height = this.container.clientHeight * 2
+    width = this.container.clientWidth * this.renderRatio
+    height = this.container.clientHeight * this.renderRatio
   }
   this.view.resizeWindow(width, height)
 }
