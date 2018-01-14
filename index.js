@@ -11,7 +11,6 @@ var inherits = require('inherits')
 var path = require('path')
 var EventEmitter = require('events').EventEmitter
 if (process.browser) var interact = require('interact')
-var requestAnimationFrame = require('raf')
 var collisions = require('collide-3d-tilemap')
 var aabb = require('aabb-3d')
 var glMatrix = require('gl-matrix')
@@ -83,7 +82,6 @@ function Game(opts) {
     [-Infinity, -Infinity, -Infinity]
   )
   
-  this.timer = this.initializeTimer((opts.tickFPS || 16))
   this.paused = false
 
   this.spatial = new SpatialEventEmitter
@@ -651,17 +649,26 @@ Game.prototype.render = function(delta) {
 }
 
 Game.prototype.initializeTimer = function(rate) {
+  // self.interval = setInterval(timer, 0)
+  return 0
+  return self.interval
+  
+}
+
+Game.prototype.initializeRendering = function(opts) {
   var self = this
   var accum = 0
   var now = 0
   var last = null
   var dt = 0
   var wholeTick
+  var rate = opts.tickFPS || 16
   
   self.frameUpdated = true
-  self.interval = setInterval(timer, 0)
-  return self.interval
-  
+  if (!opts.statsDisabled) self.addStats()
+
+  window.addEventListener('resize', self.onWindowResize.bind(self), false)
+
   function timer() {
     if (self.paused) {
       last = Date.now()
@@ -672,30 +679,28 @@ Game.prototype.initializeTimer = function(rate) {
     dt = now - (last || now)
     last = now
     accum += dt
-    if (accum < rate) return
+    if (accum < rate) return dt
     wholeTick = ((accum / rate)|0)
-    if (wholeTick <= 0) return
+    if (wholeTick <= 0) return dt
     wholeTick *= rate
     
     self.tick(wholeTick)
     accum -= wholeTick
     
     self.frameUpdated = true
+    return dt
   }
-}
 
-Game.prototype.initializeRendering = function(opts) {
-  var self = this
+  function render() {
+    requestAnimationFrame(render);
+    var dt = timer()
 
-  if (!opts.statsDisabled) self.addStats()
-
-  window.addEventListener('resize', self.onWindowResize.bind(self), false)
-
-  requestAnimationFrame(window).on('data', function(dt) {
     self.emit('prerender', dt)
     self.render(dt)
     self.emit('postrender', dt)
-  })
+  }
+  requestAnimationFrame(render);
+
   if (typeof stats !== 'undefined') {
     self.on('postrender', function() {
       stats.update()
