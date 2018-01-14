@@ -670,13 +670,13 @@ Game.prototype.initializeRendering = function(opts) {
   window.addEventListener('resize', self.onWindowResize.bind(self), false)
 
   function timer() {
+    now = Date.now()
+    dt = now - (last || now)
     if (self.paused) {
       last = Date.now()
       accum = 0
-      return
+      return dt
     }
-    now = Date.now()
-    dt = now - (last || now)
     last = now
     accum += dt
     if (accum < rate) return dt
