@@ -471,6 +471,37 @@ Game.prototype.chunkToWorld = function(pos) {
   ]
 }
 
+Game.prototype.removeAllChunks = function() {
+  var self = this
+  playerPosition = this.playerPosition()
+  Object.keys(self.voxels.chunks).map(function(chunkIndex) {
+    var chunk = self.voxels.chunks[chunkIndex]
+    var mesh = self.voxels.meshes[chunkIndex]
+    var pendingIndex = self.pendingChunks.indexOf(chunkIndex)
+    if (pendingIndex !== -1) self.pendingChunks.splice(pendingIndex, 1)
+    if (!chunk) return
+    var chunkPosition = chunk.position
+    if (mesh) {
+      if (mesh.surfaceMesh) {
+        self.scene.remove(mesh.surfaceMesh)
+        mesh.surfaceMesh.geometry.dispose()
+      }
+      if (mesh.wireMesh) {
+        mesh.wireMesh.geometry.dispose()
+        self.scene.remove(mesh.wireMesh)
+      }
+      delete mesh.data
+      delete mesh.geometry
+      delete mesh.meshed
+      delete mesh.surfaceMesh
+      delete mesh.wireMesh
+    }
+    delete self.voxels.chunks[chunkIndex]
+    self.emit('removeChunk', chunkPosition)
+  })
+  self.voxels.requestMissingChunks(playerPosition)
+}
+
 Game.prototype.removeFarChunks = function(playerPosition) {
   var self = this
   playerPosition = playerPosition || this.playerPosition()
